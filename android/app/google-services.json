@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "384684649813",
+    "project_id": "usmconect",
+    "storage_bucket": "usmconect.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:384684649813:android:3f8826d1cb07f75849d3dc",
+        "android_client_info": {
+          "package_name": "cl.usm.usmconnect"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCWTXzCFdSI8aJol8uOk3Yx3_m0SlKRrfg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
