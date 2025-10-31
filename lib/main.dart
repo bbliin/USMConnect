@@ -32,12 +32,10 @@ class MyApp extends StatelessWidget {
   }
 }
 
-/// Helper: convierte lo que venga en Firestore a DateTime de forma segura
 DateTime? _asDate(dynamic v) {
   if (v == null) return null;
   if (v is Timestamp) return v.toDate(); // caso normal
   if (v is Map) {
-    // por si viene como map { _seconds: ..., _nanoseconds: ... } (web/serializado)
     final s = v['_seconds'] ?? v['seconds'];
     final ns = v['_nanoseconds'] ?? v['nanoseconds'] ?? 0;
     if (s is int) {
@@ -46,7 +44,6 @@ DateTime? _asDate(dynamic v) {
     }
   }
   if (v is String) {
-    // por si alguien guardó una ISO string
     return DateTime.tryParse(v);
   }
   return null;
@@ -65,7 +62,7 @@ class _FirestoreDemoState extends State<FirestoreDemo> {
   Future<void> _addProject() async {
     await projects.add({
       'title': 'Proyecto ${DateTime.now().second}',
-      'createdAt': FieldValue.serverTimestamp(), // puede venir null 1º tick -> por eso el helper
+      'createdAt': FieldValue.serverTimestamp(),
     });
   }
 
@@ -77,7 +74,7 @@ class _FirestoreDemoState extends State<FirestoreDemo> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Conexión con Firestore'),
+        title: const Text('Conexión con Firestore jeje'),
       ),
       body: StreamBuilder<QuerySnapshot>(
         // Si algún doc tiene createdAt = null, igual funciona; los ordena al final/inicio
