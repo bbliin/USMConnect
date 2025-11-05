@@ -24,21 +24,21 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: primaryColor, // Fondo azul
+      backgroundColor: primaryColor,
       body: SafeArea(
         child: Center(
           // Center para centrar la tarjeta
           child: SingleChildScrollView(
             // Para evitar overflow con el teclado
-            padding: const EdgeInsets.all(24.0),
+            padding: const EdgeInsets.all(24),
             child: Card(
               elevation: 8.0,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16.0),
+                borderRadius: BorderRadius.circular(16),
               ),
               child: Padding(
                 padding: const EdgeInsets.symmetric(
-                    horizontal: 24.0, vertical: 32.0),
+                    horizontal: 24, vertical: 32),
                 child: Column(
                   mainAxisSize: MainAxisSize.min, 
                   children: [
@@ -72,7 +72,7 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     const SizedBox(height: 32),
 
-                    // --- Campos de Texto ---
+                    // campos de Texto
                     campoEmail(),
                     const SizedBox(height: 16),
                     campoPassword(),
@@ -85,7 +85,7 @@ class _LoginPageState extends State<LoginPage> {
                     mensajeError(),
                     const SizedBox(height: 8), // Espacio antes del link
 
-                    // --- Link de Registro ---
+                    // Link de registro 
                     botonRegistro(),
                   ],
                 ),
@@ -236,7 +236,7 @@ class _LoginPageState extends State<LoginPage> {
               recognizer: TapGestureRecognizer()
                 ..onTap = () {
 
-                  print('Navegar a la página de registro');
+                  print('Navegar a la página de registro (TODAVIA NO IMPLEMENTADO)');
                 },
             ),
           ],
