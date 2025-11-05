@@ -3,9 +3,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:usm_connect/pages/login_page.dart';
 import 'firebase_options.dart';
 
-
-import 'package:usm_connect/pages/home.dart';
-
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 

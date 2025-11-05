@@ -3,7 +3,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:usm_connect/pages/tab_page.dart';
 import 'package:usm_connect/pages/home.dart';
+
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -167,6 +169,7 @@ class _LoginPageState extends State<LoginPage> {
 
             if (!mounted) return;
 
+            // ======================== Navegar a la página de TABS ==========================
             MaterialPageRoute route = MaterialPageRoute(
               builder: (context) => HomePage(),
             );
