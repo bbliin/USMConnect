@@ -19,15 +19,22 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Firestore Demo',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF6C63FF)),
-        useMaterial3: true,
+  return MaterialApp(
+    debugShowCheckedModeBanner: false,
+    theme: ThemeData(
+      useMaterial3: true,
+      navigationBarTheme: NavigationBarThemeData(
+        backgroundColor: const Color(0xFF005A9C),
+        indicatorColor: Colors.white.withOpacity(0.2),
+        iconTheme: WidgetStateProperty.all(
+          const IconThemeData(color: Colors.white),
+        ),
+        labelTextStyle: WidgetStateProperty.all(
+          const TextStyle(color: Colors.white),
+        ),
       ),
-      
-      home: const LoginPage(),
-    );
+    ),
+    home: const LoginPage(),
+  );
   }
 }

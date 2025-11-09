@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-//  CODIGO DE HOME.DART
-
 // Esta función de ayuda se queda en este archivo,
 // ya que solo la usa _HomePageState.
 DateTime? _asDate(dynamic v) {
