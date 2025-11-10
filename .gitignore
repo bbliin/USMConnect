@@ -46,3 +46,4 @@ app.*.map.json
 
 # secretos
 firebase_key/
+android/build/reports/problems/problems-report.html
