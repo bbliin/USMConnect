@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class TabAgregarProyecto extends StatefulWidget {
   const TabAgregarProyecto({super.key});
@@ -118,5 +119,13 @@ class _TabAgregarProyectoState extends State<TabAgregarProyecto> {
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _nombreController.dispose();
+    _descripcionController.dispose();
+    _responsableController.dispose();
+    super.dispose();
   }
 }

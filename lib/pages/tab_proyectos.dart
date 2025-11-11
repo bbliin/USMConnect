@@ -1,116 +1,102 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-//  CODIGO DE HOME.DART
-
-// Esta función de ayuda se queda en este archivo,
-// ya que solo la usa _HomePageState.
-DateTime? _asDate(dynamic v) {
-  if (v == null) return null;
-  if (v is Timestamp) return v.toDate(); // caso normal
-  if (v is Map) {
-    final s = v['_seconds'] ?? v['seconds'];
-    final ns = v['_nanoseconds'] ?? v['nanoseconds'] ?? 0;
-    if (s is int) {
-      final ms = s * 1000 + (ns is int ? (ns / 1e6).round() : 0);
-      return DateTime.fromMillisecondsSinceEpoch(ms);
-    }
-  }
-  if (v is String) {
-    return DateTime.tryParse(v);
-  }
-  return null;
-}
-
-class TabProyectos extends StatefulWidget {
+class TabProyectos extends StatelessWidget {
   const TabProyectos({super.key});
-
-  @override
-  State<TabProyectos> createState() => _TabProyectosState();
-}
-
-class _TabProyectosState extends State<TabProyectos> {
-  // Referencia a la colección 'projects' en Firestore
-  final projects = FirebaseFirestore.instance.collection('projects');
-
-  Future<void> _addProject() async {
-    await projects.add({
-      'title': 'Proyecto ${DateTime.now().second}',
-      'createdAt': FieldValue.serverTimestamp(), // Usa la hora del servidor
-    });
-  }
-
-  Future<void> _delete(DocumentReference ref) async {
-    await ref.delete();
-  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Conexión con Firestore'),
-      ),
       body: StreamBuilder<QuerySnapshot>(
-        // Escucha los cambios en la colección, ordenados por fecha
-        stream: projects.orderBy('createdAt', descending: true).snapshots(),
+        // Escucha en tiempo real los cambios de Firestore
+        stream: FirebaseFirestore.instance
+            .collection('projects')
+            .orderBy('fecha_creacion', descending: true)
+            .snapshots(),
         builder: (context, snapshot) {
-          // Manejo de errores
+          // Estado de carga
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          // Si ocurre un error
           if (snapshot.hasError) {
             return Center(
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Text(
-                  'Error: ${snapshot.error}',
-                  textAlign: TextAlign.center,
-                ),
+              child: Text('Error: ${snapshot.error}'),
+            );
+          }
+
+          // Si no hay proyectos
+          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+            return const Center(
+              child: Text(
+                'No hay proyectos agregados aún',
+                style: TextStyle(fontSize: 16, color: Colors.grey),
               ),
             );
           }
 
-          // Muestra un indicador de carga mientras espera datos
-          if (!snapshot.hasData) {
-            return const Center(child: CircularProgressIndicator());
-          }
+          // Mostrar los proyectos
+          final proyectos = snapshot.data!.docs;
 
-          final docs = snapshot.data!.docs;
+          return ListView.builder(
+            padding: const EdgeInsets.all(12),
+            itemCount: proyectos.length,
+            itemBuilder: (context, index) {
+              final proyecto = proyectos[index];
+              final data = proyecto.data() as Map<String, dynamic>;
 
-          // Muestra un mensaje si la lista está vacía
-          if (docs.isEmpty) {
-            return const Center(
-                child: Text('Sin proyectos. Toca + para crear uno.'));
-          }
-
-          // Construye la lista de proyectos
-          return ListView.separated(
-            itemCount: docs.length,
-            separatorBuilder: (_, __) => const Divider(height: 0),
-            itemBuilder: (context, i) {
-              final doc = docs[i];
-              // Convierte los datos del documento a un Mapa
-              final data = doc.data() as Map<String, dynamic>? ?? {};
-              
-              // Obtiene los datos de forma segura
-              final title = (data['title'] ?? 'Sin título').toString();
-              final dt = _asDate(data['createdAt']);
-              final fecha = dt != null ? dt.toLocal().toString() : 'sin fecha';
-
-              return ListTile(
-                title: Text(title),
-                subtitle: Text(fecha),
-                trailing: IconButton(
-                  tooltip: 'Eliminar',
-                  icon: const Icon(Icons.delete_outline),
-                  onPressed: () => _delete(doc.reference),
+              return Card(
+                color: const Color(0xFFE3F2FD),
+                elevation: 3,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                margin: const EdgeInsets.symmetric(vertical: 8),
+                child: ListTile(
+                  contentPadding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  title: Text(
+                    data['nombre'] ?? 'Sin nombre',
+                    style: const TextStyle(
+                        fontWeight: FontWeight.bold, fontSize: 18),
+                  ),
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 6),
+                      Text(
+                        data['descripcion'] ?? 'Sin descripción',
+                        style: const TextStyle(fontSize: 14),
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        'Responsable: ${data['responsable'] ?? 'Desconocido'}',
+                        style: const TextStyle(
+                            fontSize: 13, fontStyle: FontStyle.italic),
+                      ),
+                      if (data['fecha_creacion'] != null)
+                        Text(
+                          'Fecha: ${_formatearFecha(data['fecha_creacion'])}',
+                          style: const TextStyle(fontSize: 12),
+                        ),
+                    ],
+                  ),
+                  //leading: const Icon(Icons.folder, color: Color(0xFF005A9C)),
                 ),
               );
             },
           );
         },
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _addProject,
-        child: const Icon(Icons.add),
-      ),
     );
+  }
+
+  // Función auxiliar para mostrar fecha legible
+  static String _formatearFecha(Timestamp timestamp) {
+    final fecha = timestamp.toDate();
+    return '${fecha.day.toString().padLeft(2, '0')}/'
+        '${fecha.month.toString().padLeft(2, '0')}/'
+        '${fecha.year}';
   }
 }
