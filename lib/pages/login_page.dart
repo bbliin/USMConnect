@@ -170,10 +170,11 @@ class _LoginPageState extends State<LoginPage> {
             if (!mounted) return;
 
             // ======================== Navegar a la página de TABS ==========================
-            MaterialPageRoute route = MaterialPageRoute(
-              builder: (context) => HomePage(),
-            );
-            Navigator.pushReplacement(context, route);
+            Navigator.pushReplacementNamed(context, '/tabs');
+            // MaterialPageRoute route = MaterialPageRoute(
+            //   builder: (context) => HomePage(),
+            // );
+            // Navigator.pushReplacement(context, route);
           } on FirebaseAuthException catch (ex) {
             switch (ex.code) {
               case 'user-not-found':
