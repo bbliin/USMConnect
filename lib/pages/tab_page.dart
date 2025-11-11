@@ -11,61 +11,40 @@ class TabsPage extends StatefulWidget {
 }
 
 class _TabsPageState extends State<TabsPage> {
-  int currentPageIndex = 0;
-  NavigationDestinationLabelBehavior labelBehavior = NavigationDestinationLabelBehavior.alwaysHide;
+  int _currentIndex = 0;
 
-  final List<Map<String, dynamic>> _paginas = [
-    {
-      'pagina': TabProyectos(),
-      'texto': 'Proyectos',
-      'icon': Icons.folder,
-    },
-    {
-      'pagina': TabAgregarProyecto(),
-      'texto': 'Agregar',
-      'icon': Icons.add_circle,
-    },
-        {
-      'pagina': TabPerfil(),
-      'texto': 'Perfil',
-      'icon': Icons.account_circle,
-    },
+  final List<Widget> _pages = const [
+    TabProyectos(),
+    TabAgregarProyecto(),
+    TabPerfil(),
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('USM Connect'), 
-        centerTitle: true,
-        foregroundColor: Colors.white,
-        backgroundColor: const Color(0xFF005A9C),
-      ),
-
-      body: _paginas[currentPageIndex]['pagina'],
-
-      bottomNavigationBar: NavigationBar(
-        labelBehavior: labelBehavior,
-        backgroundColor: const Color(0xFF005A9C),
-        indicatorColor: const Color.fromARGB(224, 255, 255, 255).withOpacity(0.2),
-        selectedIndex: currentPageIndex,
-        onDestinationSelected: (int index) {
+      body: _pages[_currentIndex],
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _currentIndex,
+        onTap: (index) {
           setState(() {
-            currentPageIndex = index;
+            _currentIndex = index;
           });
         },
-        destinations: [
-          NavigationDestination(
-            icon: Icon(_paginas[0]['icon']),
-            label: _paginas[0]['texto'],
+        selectedItemColor: const Color(0xFF005A9C),
+        unselectedItemColor: Colors.grey,
+        showUnselectedLabels: true,
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.list_alt),
+            label: 'Feed',
           ),
-          NavigationDestination(
-            icon: Icon(_paginas[1]['icon']),
-            label: _paginas[1]['texto'],
+          BottomNavigationBarItem(
+            icon: Icon(Icons.add_circle_outline),
+            label: 'Publicar',
           ),
-          NavigationDestination(
-            icon: Icon(_paginas[2]['icon']),
-            label: _paginas[2]['texto'],
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person_outline),
+            label: 'Perfil',
           ),
         ],
       ),
