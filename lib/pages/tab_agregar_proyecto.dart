@@ -120,12 +120,4 @@ class _TabAgregarProyectoState extends State<TabAgregarProyecto> {
       ),
     );
   }
-
-  @override
-  void dispose() {
-    _nombreController.dispose();
-    _descripcionController.dispose();
-    _responsableController.dispose();
-    super.dispose();
-  }
 }
