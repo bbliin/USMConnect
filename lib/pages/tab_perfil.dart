@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:usm_connect/pages/login_page.dart';
 
@@ -13,6 +14,23 @@ class TabPerfil extends StatefulWidget {
 
 class _TabPerfilState extends State<TabPerfil> {
   final User? user = FirebaseAuth.instance.currentUser;
+
+  Future<void> _eliminarProyecto(String idProyecto) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('projects')
+          .doc(idProyecto)
+          .delete();
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Proyecto eliminado")),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Error al eliminar: $e")),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -75,14 +93,62 @@ class _TabPerfilState extends State<TabPerfil> {
                       borderRadius: BorderRadius.circular(8),
                     )),
               ),
-            )
+            ),
+
+            const SizedBox(height: 24),
+
+            // Lista de proyectos del usuario
+            StreamBuilder<QuerySnapshot>(
+              stream: FirebaseFirestore.instance
+                  .collection('projects')
+                  .where('responsable', isEqualTo: user?.email)
+                  .snapshots(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+
+                if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                  return const Text(
+                    "No has publicado proyectos aún.",
+                    style: TextStyle(color: Colors.grey),
+                  );
+                }
+
+                final proyectos = snapshot.data!.docs;
+
+                return ListView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: proyectos.length,
+                  itemBuilder: (context, index) {
+                    final p = proyectos[index];
+                    final data = p.data() as Map<String, dynamic>;
+
+                    return Card(
+                      margin: const EdgeInsets.symmetric(vertical: 8),
+                      child: ListTile(
+                        title: Text(
+                          data['nombre'] ?? 'Proyecto sin título',
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        
+                        trailing: IconButton(
+                          icon: const Icon(Icons.delete, color: Colors.redAccent),
+                          onPressed: () => _confirmarEliminarProyecto(p.id),
+                        ),
+                      ),
+                    );
+                  },
+                );
+              },
+            ),
+
           ],
         ),
       ),
     );
   }
-
- 
 
   void _mostrarAlertaCerrarSesion() {
     showDialog(
@@ -136,4 +202,27 @@ class _TabPerfilState extends State<TabPerfil> {
       }
     }
   }
+
+  void _confirmarEliminarProyecto(String idProyecto) {
+  showDialog(
+    context: context,
+    builder: (_) => AlertDialog(
+      title: const Text("Eliminar Proyecto"),
+      content: const Text("¿Seguro que quieres borrar este proyecto?"),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text("Cancelar"),
+        ),
+        TextButton(
+          onPressed: () {
+            Navigator.pop(context);
+            _eliminarProyecto(idProyecto);
+          },
+          child: const Text("Eliminar", style: TextStyle(color: Colors.red)),
+        ),
+      ],
+    ),
+  );
+}
 }

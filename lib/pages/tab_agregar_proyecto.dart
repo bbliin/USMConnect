@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class TabAgregarProyecto extends StatefulWidget {
   const TabAgregarProyecto({super.key});
@@ -66,10 +67,11 @@ class _TabAgregarProyectoState extends State<TabAgregarProyecto> {
     setState(() => _isLoading = true);
 
     try {
+      final user = FirebaseAuth.instance.currentUser;
       await FirebaseFirestore.instance.collection('projects').add({
         'nombre': _nombreController.text.trim(),
         'descripcion': _descripcionController.text.trim(),
-        'responsable': _responsableController.text.trim(),
+        'responsable': user?.email ?? 'desconocido',
         'carreras_relacionadas': _selectedCarreras.toList(),
         'habilidades': _selectedHabilidades.toList(),
         'fecha_creacion': Timestamp.now(),
@@ -172,15 +174,6 @@ class _TabAgregarProyectoState extends State<TabAgregarProyecto> {
                     : null,
               ),
               const SizedBox(height: 16),
-
-              TextFormField(
-                controller: _responsableController,
-                decoration: _inputDecoration(
-                  label: 'Responsable',
-                  hint: 'Nombre de quien lidera el proyecto',
-                ),
-              ),
-              const SizedBox(height: 24),
 
               const Text(
                 'Carreras Relacionadas *',

@@ -45,6 +45,8 @@ class TabProyectos extends StatelessWidget {
               final String descripcion =
                   data['descripcion'] ?? 'Sin descripción';
 
+              final String responsable = data['responsable'] ?? 'Desconocido';
+
               final List<String> carreras =
                   List<String>.from(data['carreras_relacionadas'] ?? []);
               final List<String> habilidades =
@@ -86,6 +88,15 @@ class TabProyectos extends StatelessWidget {
                       ),
                       const SizedBox(height: 8),
 
+                      Text(
+                        'Responsable: $responsable',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey.shade800,
+                          fontStyle: FontStyle.italic,
+                        ),
+                      ),
+                      
                       if (carreras.isNotEmpty) ...[
                         Wrap(
                           spacing: 4,
