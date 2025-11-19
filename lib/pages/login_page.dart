@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:usm_connect/pages/register_page.dart';
 import 'package:usm_connect/pages/tab_page.dart';
 
 class LoginPage extends StatefulWidget {
@@ -219,29 +220,31 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Widget botonRegistro() {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 16.0),
-      alignment: Alignment.center,
-      child: Text.rich(
-        TextSpan(
-          text: '¿No tienes cuenta? ',
-          style: TextStyle(color: Colors.black54, fontSize: 15),
-          children: [
-            TextSpan(
-              text: 'Regístrate',
-              style: TextStyle(
-                  color: primaryColor,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 15),
-              recognizer: TapGestureRecognizer()
-                ..onTap = () {
-
-                  print('Navegar a la página de registro (TODAVIA NO IMPLEMENTADO)');
-                },
-            ),
-          ],
-        ),
+  return Container(
+    padding: const EdgeInsets.symmetric(vertical: 16.0),
+    alignment: Alignment.center,
+    child: Text.rich(
+      TextSpan(
+        text: '¿No tienes cuenta? ',
+        style: const TextStyle(color: Colors.black54, fontSize: 15),
+        children: [
+          TextSpan(
+            text: 'Regístrate',
+            style: TextStyle(
+                color: primaryColor,
+                fontWeight: FontWeight.bold,
+                fontSize: 15),
+            recognizer: TapGestureRecognizer()
+              ..onTap = () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const RegisterPage()),
+                );
+              },
+          ),
+        ],
       ),
-    );
-  }
+    ),
+  );
+}
 }
