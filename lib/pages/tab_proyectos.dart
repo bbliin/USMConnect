@@ -7,6 +7,8 @@ class TabProyectos extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final pageController = PageController(viewportFraction: 0.88);
+
     return Scaffold(
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
@@ -32,12 +34,16 @@ class TabProyectos extends StatelessWidget {
 
           final proyectos = snapshot.data!.docs;
 
-          return ListView.builder(
-            padding: const EdgeInsets.all(12),
+          return PageView.builder(
+            controller: pageController,
             itemCount: proyectos.length,
             itemBuilder: (context, index) {
               final data = proyectos[index].data() as Map<String, dynamic>;
-              return ProyectoCard(data: data);
+              return ProyectoCard(
+                data: data,
+                index: index,
+                pageController: pageController,
+              );
             },
           );
         },
