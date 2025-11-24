@@ -10,12 +10,16 @@ class TabAgregarProyecto extends StatefulWidget {
 }
 
 class _TabAgregarProyectoState extends State<TabAgregarProyecto> {
-  final _formKey = GlobalKey<FormState>();
 
+  final _formKey = GlobalKey<FormState>();
   final TextEditingController _nombreController = TextEditingController();
   final TextEditingController _descripcionController = TextEditingController();
   final TextEditingController _responsableController = TextEditingController();
+  final Set<String> _selectedCarreras = {};
+  final Set<String> _selectedHabilidades = {};
 
+  bool _carrerasError = false;
+  bool _habilidadesError = false;
   bool _isLoading = false;
 
   final List<String> _carreras = [
@@ -48,12 +52,6 @@ class _TabAgregarProyectoState extends State<TabAgregarProyecto> {
     'DevOps',
   ];
 
-  final Set<String> _selectedCarreras = {};
-  final Set<String> _selectedHabilidades = {};
-
-  bool _carrerasError = false;
-  bool _habilidadesError = false;
-
   Future<void> _agregarProyecto() async {
     final isValid = _formKey.currentState!.validate();
 
@@ -83,10 +81,12 @@ class _TabAgregarProyectoState extends State<TabAgregarProyecto> {
       _selectedCarreras.clear();
       _selectedHabilidades.clear();
 
+      if (!mounted) return;  
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Proyecto agregado correctamente')),
       );
     } catch (e) {
+      if (!mounted) return;  
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error al agregar: $e')),
       );
@@ -94,6 +94,7 @@ class _TabAgregarProyectoState extends State<TabAgregarProyecto> {
       setState(() => _isLoading = false);
     }
   }
+
 
   InputDecoration _inputDecoration({
     required String label,
@@ -120,6 +121,7 @@ class _TabAgregarProyectoState extends State<TabAgregarProyecto> {
     );
   }
 
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -130,6 +132,7 @@ class _TabAgregarProyectoState extends State<TabAgregarProyecto> {
           key: _formKey,
           child: ListView(
             children: [
+
               const SizedBox(height: 8),
 
               const Text(
@@ -139,7 +142,9 @@ class _TabAgregarProyectoState extends State<TabAgregarProyecto> {
                   fontWeight: FontWeight.bold,
                 ),
               ),
+
               const SizedBox(height: 4),
+
               const Text(
                 'Comparte tu idea con la comunidad',
                 style: TextStyle(
@@ -147,13 +152,13 @@ class _TabAgregarProyectoState extends State<TabAgregarProyecto> {
                   color: Colors.black54,
                 ),
               ),
+
               const SizedBox(height: 20),
 
               TextFormField(
                 controller: _nombreController,
                 decoration: _inputDecoration(
                   label: 'Título del Proyecto *',
-                  hint: 'ej. Sistema de gestión de proyectos',
                 ),
                 validator: (value) => value == null || value.isEmpty
                     ? 'Ingrese un título para el proyecto'
@@ -166,13 +171,12 @@ class _TabAgregarProyectoState extends State<TabAgregarProyecto> {
                 maxLines: 4,
                 decoration: _inputDecoration(
                   label: 'Descripción *',
-                  hint:
-                      'Describe tu proyecto y qué tipo de colaboradores buscas...',
                 ),
                 validator: (value) => value == null || value.isEmpty
                     ? 'Ingrese una descripción'
                     : null,
               ),
+
               const SizedBox(height: 16),
 
               const Text(
@@ -182,6 +186,7 @@ class _TabAgregarProyectoState extends State<TabAgregarProyecto> {
                   fontWeight: FontWeight.bold,
                 ),
               ),
+
               const SizedBox(height: 6),
 
               Column(
@@ -211,6 +216,7 @@ class _TabAgregarProyectoState extends State<TabAgregarProyecto> {
                   );
                 }).toList(),
               ),
+
               if (_carrerasError)
                 const Padding(
                   padding: EdgeInsets.only(top: 4.0),
@@ -221,6 +227,7 @@ class _TabAgregarProyectoState extends State<TabAgregarProyecto> {
                 ),
 
               const SizedBox(height: 16),
+              
               const Text(
                 'Habilidades / Tecnologías *',
                 style: TextStyle(
@@ -228,6 +235,7 @@ class _TabAgregarProyectoState extends State<TabAgregarProyecto> {
                   fontWeight: FontWeight.bold,
                 ),
               ),
+
               const SizedBox(height: 8),
 
               Wrap(
@@ -252,6 +260,7 @@ class _TabAgregarProyectoState extends State<TabAgregarProyecto> {
                   );
                 }).toList(),
               ),
+
               if (_habilidadesError)
                 const Padding(
                   padding: EdgeInsets.only(top: 4.0),
@@ -293,7 +302,6 @@ class _TabAgregarProyectoState extends State<TabAgregarProyecto> {
                   ),
                 ),
               ),
-              const SizedBox(height: 8),
             ],
           ),
         ),

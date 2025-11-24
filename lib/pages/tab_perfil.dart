@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:usm_connect/pages/login_page.dart';
-
+import 'package:usm_connect/authentication/login_page.dart';
+import 'dart:developer' as developer;
 
 class TabPerfil extends StatefulWidget {
   const TabPerfil({super.key});
@@ -16,21 +16,23 @@ class _TabPerfilState extends State<TabPerfil> {
   final User? user = FirebaseAuth.instance.currentUser;
 
   Future<void> _eliminarProyecto(String idProyecto) async {
-    try {
-      await FirebaseFirestore.instance
-          .collection('projects')
-          .doc(idProyecto)
-          .delete();
+  try {
+    await FirebaseFirestore.instance
+        .collection('projects')
+        .doc(idProyecto)
+        .delete();
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Proyecto eliminado")),
-      );
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Error al eliminar: $e")),
-      );
-    }
+    if (!mounted) return;  
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text("Proyecto eliminado")),
+    );
+  } catch (e) {
+    if (!mounted) return;   
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text("Error al eliminar: $e")),
+    );
   }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -194,7 +196,7 @@ class _TabPerfilState extends State<TabPerfil> {
       );
     } catch (e) {
 
-      print("Error al cerrar sesion: $e");
+      developer.log("Error al cerrar sesión", error: e);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text("Error al intentar cerrar sesion")),

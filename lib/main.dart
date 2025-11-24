@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:usm_connect/pages/login_page.dart';
+import 'package:usm_connect/authentication/login_page.dart';
 import 'firebase_options.dart';
 
 Future<void> main() async {
@@ -22,7 +22,7 @@ class MyApp extends StatelessWidget {
       useMaterial3: true,
       navigationBarTheme: NavigationBarThemeData(
         backgroundColor: const Color(0xFF005A9C),
-        indicatorColor: Colors.white.withOpacity(0.2),
+        indicatorColor: Colors.white.withValues(alpha: 0.2),
         iconTheme: WidgetStateProperty.all(
           const IconThemeData(color: Colors.white),
         ),

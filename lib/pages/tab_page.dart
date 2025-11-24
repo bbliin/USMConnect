@@ -47,7 +47,7 @@ class _TabsPageState extends State<TabsPage> {
       bottomNavigationBar: NavigationBar(
         labelBehavior: labelBehavior,
         backgroundColor: const Color(0xFF005A9C),
-        indicatorColor: const Color.fromARGB(224, 255, 255, 255).withOpacity(0.2),
+        indicatorColor: const Color.fromARGB(224, 255, 255, 255).withValues(alpha: 0.2),
         selectedIndex: currentPageIndex,
         onDestinationSelected: (int index) {
           setState(() {

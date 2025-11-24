@@ -2,7 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:usm_connect/pages/register_page.dart';
+import 'package:usm_connect/authentication/register_page.dart';
 import 'package:usm_connect/pages/tab_page.dart';
 
 class LoginPage extends StatefulWidget {
@@ -82,7 +82,6 @@ class _LoginPageState extends State<LoginPage> {
                     isLoading
                         ? CircularProgressIndicator(color: primaryColor)
                         : botonLogin(),
-                    mensajeError(),
                     const SizedBox(height: 8), // Espacio antes del link
 
                     // Link de registro 
@@ -133,91 +132,77 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  Container mensajeError() {
-    return Container(
-      padding: const EdgeInsets.only(top: 12.0),
-      child: Text(
-        errorText,
-        style: const TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
-        textAlign: TextAlign.center,
-      ),
-    );
-  }
+  Widget botonLogin() {
+  return SizedBox(
+    width: double.infinity,
+    child: ElevatedButton(
+      onPressed: () async {
+        setState(() {
+          isLoading = true;
+          errorText = '';
+        });
 
-  Container botonLogin() {
-    return Container(
-      width: double.infinity,
-      child: ElevatedButton(
-        onPressed: () async {
+        try {
+          UserCredential userCredential =
+              await FirebaseAuth.instance.signInWithEmailAndPassword(
+            email: emailCtrl.text.trim(),
+            password: passwordCtrl.text.trim(),
+          );
 
-          setState(() {
-            isLoading = true; 
-            errorText = '';
-          });
+          SharedPreferences sp = await SharedPreferences.getInstance();
+          sp.setString('user_email', emailCtrl.text.trim());
 
-          try {
-            UserCredential userCredential =
-                await FirebaseAuth.instance.signInWithEmailAndPassword(
-              email: emailCtrl.text.trim(),
-              password: passwordCtrl.text.trim(),
-            );
-            SharedPreferences sp = await SharedPreferences.getInstance();
-            sp.setString('user_email', emailCtrl.text.trim());
+          if (!mounted) return;
 
-
-            if (!mounted) return;
-
-            // ======================== Navegar a la página de TABS ==========================
-            MaterialPageRoute route = MaterialPageRoute(
-              builder: (context) => TabsPage(),
-            );
-            Navigator.pushReplacement(context, route);
-          } on FirebaseAuthException catch (ex) {
-            switch (ex.code) {
-              case 'user-not-found':
-                errorText = 'Usuario no existe';
-                break;
-              case 'invalid-email':
-                errorText = 'Formato de correo inválido';
-                break;
-              case 'wrong-password':
-                errorText = 'Contraseña incorrecta';
-                break;
-              case 'user-disabled':
-                errorText = 'Cuenta desactivada';
-                break;
-              case 'invalid-credential':
-                errorText = 'Credenciales inválidas';
-                break;
-              default:
-                errorText = 'Error desconocido';
-            }
-          } finally {
-            // Ocultar indicador de carga y mostrar error si lo hay
-            if (mounted) {
-              setState(() {
-                isLoading = false;
-              });
-            }
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const TabsPage()),
+          );
+        } on FirebaseAuthException catch (ex) {
+          switch (ex.code) {
+            case 'user-not-found':
+              errorText = 'Usuario no existe';
+              break;
+            case 'invalid-email':
+              errorText = 'Formato de correo inválido';
+              break;
+            case 'wrong-password':
+              errorText = 'Contraseña incorrecta';
+              break;
+            case 'user-disabled':
+              errorText = 'Cuenta desactivada';
+              break;
+            case 'invalid-credential':
+              errorText = 'Credenciales inválidas';
+              break;
+            default:
+              errorText = 'Error desconocido';
           }
-      
-        },
-        style: ElevatedButton.styleFrom(
-          backgroundColor: primaryColor,
-          foregroundColor: Colors.white,
-          padding: const EdgeInsets.symmetric(vertical: 16),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8.0), 
-          ),
-          textStyle: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-          ),
+        } finally {
+          if (mounted) {
+            setState(() {
+              isLoading = false;
+            });
+          }
+        }
+      },
+      style: ElevatedButton.styleFrom(
+        backgroundColor: primaryColor,
+        foregroundColor: Colors.white,
+        padding: const EdgeInsets.symmetric(vertical: 16),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8.0),
         ),
-        child: const Text('Iniciar Sesión'),
+        textStyle: const TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.bold,
+        ),
       ),
-    );
-  }
+      child: const Text('Iniciar Sesión'),
+    ),
+  );
+}
+
 
   Widget botonRegistro() {
   return Container(

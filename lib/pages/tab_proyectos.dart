@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:usm_connect/widgets/proyecto_card.dart';
 
 class TabProyectos extends StatelessWidget {
   const TabProyectos({super.key});
@@ -18,16 +19,13 @@ class TabProyectos extends StatelessWidget {
           }
 
           if (snapshot.hasError) {
-            return Center(
-              child: Text('Error: ${snapshot.error}'),
-            );
+            return Center(child: Text('Error: ${snapshot.error}'));
           }
 
           if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
             return const Center(
               child: Text(
                 'No hay proyectos agregados aún',
-                style: TextStyle(fontSize: 16, color: Colors.grey),
               ),
             );
           }
@@ -38,143 +36,12 @@ class TabProyectos extends StatelessWidget {
             padding: const EdgeInsets.all(12),
             itemCount: proyectos.length,
             itemBuilder: (context, index) {
-              final proyecto = proyectos[index];
-              final data = proyecto.data() as Map<String, dynamic>;
-
-              final String titulo = data['nombre'] ?? 'Sin nombre';
-              final String descripcion =
-                  data['descripcion'] ?? 'Sin descripción';
-
-              final String responsable = data['responsable'] ?? 'Desconocido';
-
-              final List<String> carreras =
-                  List<String>.from(data['carreras_relacionadas'] ?? []);
-              final List<String> habilidades =
-                  List<String>.from(data['habilidades'] ?? []);
-
-              return Container(
-                margin: const EdgeInsets.symmetric(vertical: 6),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFE3F2FD), 
-                  borderRadius: BorderRadius.circular(16),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.05),
-                      blurRadius: 4,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
-                ),
-                child: Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        titulo,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-
-                      Text(
-                        descripcion,
-                        style: const TextStyle(fontSize: 13),
-                        maxLines: 3,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      const SizedBox(height: 8),
-
-                      Text(
-                        'Responsable: $responsable',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.grey.shade800,
-                          fontStyle: FontStyle.italic,
-                        ),
-                      ),
-                      
-                      if (carreras.isNotEmpty) ...[
-                        Wrap(
-                          spacing: 4,
-                          runSpacing: 4,
-                          children: carreras
-                              .map(
-                                (c) => _buildTag(
-                                  text: c,
-                                  background: const Color(0xFF1565C0),
-                                  textColor: Colors.white,
-                                ),
-                              )
-                              .toList(),
-                        ),
-                        const SizedBox(height: 4),
-                      ],
-
-                      if (habilidades.isNotEmpty)
-                        Wrap(
-                          spacing: 4,
-                          runSpacing: 4,
-                          children: habilidades
-                              .map(
-                                (h) => _buildTag(
-                                  text: h,
-                                  background: const Color(0xFFFFD54F),
-                                  textColor: Colors.black87,
-                                ),
-                              )
-                              .toList(),
-                        ),
-
-                      const SizedBox(height: 6),
-
-                      if (data['fecha_creacion'] != null)
-                        Text(
-                          'Publicado el ${_formatearFecha(data['fecha_creacion'])}',
-                          style: TextStyle(
-                            fontSize: 11,
-                            color: Colors.grey.shade700,
-                          ),
-                        ),
-                    ],
-                  ),
-                ),
-              );
+              final data = proyectos[index].data() as Map<String, dynamic>;
+              return ProyectoCard(data: data);
             },
           );
         },
       ),
     );
-  }
-
-  static Widget _buildTag({
-    required String text,
-    required Color background,
-    required Color textColor,
-  }) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration: BoxDecoration(
-        color: background,
-        borderRadius: BorderRadius.circular(6),
-      ),
-      child: Text(
-        text,
-        style: TextStyle(
-          fontSize: 11,
-          color: textColor,
-        ),
-      ),
-    );
-  }
-
-  static String _formatearFecha(Timestamp timestamp) {
-    final fecha = timestamp.toDate();
-    return '${fecha.day.toString().padLeft(2, '0')}/'
-        '${fecha.month.toString().padLeft(2, '0')}/'
-        '${fecha.year}';
   }
 }
