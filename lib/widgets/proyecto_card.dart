@@ -55,68 +55,122 @@ class ProyectoCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Título
-            Text(
-              titulo,
-              style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
+            // ---- TÍTULO ----
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(16),
+              decoration: const BoxDecoration(
+                color: Color(0xFFE1F5FE), // celeste claro
+                borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+              ),
+              child: Text(
+                titulo,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
 
             const SizedBox(height: 6),
 
-            // Descripción
-            Text(
-              descripcion,
-              style: const TextStyle(fontSize: 14),
-              maxLines: 3,
-              overflow: TextOverflow.ellipsis,
-            ),
-
-            const SizedBox(height: 10),
-
-            // Responsable
-            Text(
-              'Responsable: $responsable',
-              style: TextStyle(
-                fontSize: 12,
-                color: Colors.grey.shade800,
-                fontStyle: FontStyle.italic,
+            // ---- DESCRIPCIÓN ----
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(16),
+              color: const Color(0xFFFFF9C4), // amarillo claro
+              child: Text(
+                descripcion,
+                style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
               ),
             ),
 
             const SizedBox(height: 10),
 
-            // Carreras
-            if (carreras.isNotEmpty)
-              Wrap(
-                spacing: 6,
-                runSpacing: 6,
-                children: carreras
-                    .map((c) => TagWidget(
-                          text: c,
-                          background: const Color(0xFF1565C0),
-                          textColor: Colors.white,
-                        ))
-                    .toList(),
+            // ---- RESPONSABLE ----
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(16),
+              color: const Color(0xFFFFE0B2), // naranjo claro
+              child: Text(
+                "Contactar: $responsable",
+                style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
               ),
+            ),
 
-            const SizedBox(height: 6),
+            const SizedBox(height: 10),
 
-            // Habilidades
-            if (habilidades.isNotEmpty)
-              Wrap(
-                spacing: 6,
-                runSpacing: 6,
-                children: habilidades
-                    .map((h) => TagWidget(
-                          text: h,
-                          background: const Color(0xFFFFD54F),
-                          textColor: Colors.black87,
-                        ))
-                    .toList(),
+            // ---- CARRERAS Y HABILIDADES ----
+            
+            IntrinsicHeight(
+              child: Row(
+                children: [
+                  // --- CARRERAS ---
+                  Expanded(
+                    child: Container(
+                      padding: const EdgeInsets.all(16),
+                      color: const Color(0xFFC8E6C9),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            "Carreras",
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          const SizedBox(height: 6),
+
+                          if (carreras.isNotEmpty)
+                            Wrap(
+                              spacing: 6,
+                              runSpacing: 6,
+                              children: carreras
+                                  .map((c) => TagWidget(
+                                        text: c,
+                                        background: const Color(0xFF1565C0),
+                                        textColor: Colors.white,
+                                      ))
+                                  .toList(),
+                            ),
+                        ],
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(width: 8),
+
+                  // --- HABILIDADES ---
+                  Expanded(
+                    child: Container(
+                      padding: const EdgeInsets.all(16),
+                      color: const Color(0xFFD1C4E9),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            "Habilidades",
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          const SizedBox(height: 6),
+
+                          if (habilidades.isNotEmpty)
+                            Wrap(
+                              spacing: 6,
+                              runSpacing: 6,
+                              children: habilidades
+                                  .map((h) => TagWidget(
+                                        text: h,
+                                        background: const Color(0xFFFFD54F),
+                                        textColor: Colors.black87,
+                                      ))
+                                  .toList(),
+                            ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
               ),
+            ),
 
             const Spacer(),
 
