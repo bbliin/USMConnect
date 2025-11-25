@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:usm_connect/authentication/login_page.dart';
 import 'dart:developer' as developer;
+import 'package:usm_connect/pages/tab_agregar_proyecto.dart';
 
 class TabPerfil extends StatefulWidget {
   const TabPerfil({super.key});
@@ -14,7 +15,6 @@ class TabPerfil extends StatefulWidget {
 
 class _TabPerfilState extends State<TabPerfil> {
   final User? user = FirebaseAuth.instance.currentUser;
-
   Future<void> _eliminarProyecto(String idProyecto) async {
   try {
     await FirebaseFirestore.instance
@@ -99,7 +99,6 @@ class _TabPerfilState extends State<TabPerfil> {
 
             const SizedBox(height: 24),
 
-            // Lista de proyectos del usuario
             StreamBuilder<QuerySnapshot>(
               stream: FirebaseFirestore.instance
                   .collection('projects')
@@ -134,10 +133,31 @@ class _TabPerfilState extends State<TabPerfil> {
                           data['nombre'] ?? 'Proyecto sin título',
                           style: const TextStyle(fontWeight: FontWeight.bold),
                         ),
-                        
-                        trailing: IconButton(
-                          icon: const Icon(Icons.delete, color: Colors.redAccent),
-                          onPressed: () => _confirmarEliminarProyecto(p.id),
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            IconButton(
+                              icon: const Icon(Icons.edit, color: Colors.blue),
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => Scaffold(
+                                      appBar: AppBar(title: const Text("Editar Proyecto")),
+                                      body: TabAgregarProyecto(
+                                        proyectoId: p.id,
+                                        dataInicial: data,
+                                    ),
+                                  ),
+                                ),
+                                );
+                              },
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.delete, color: Colors.redAccent),
+                              onPressed: () => _confirmarEliminarProyecto(p.id),
+                            ),
+                          ],
                         ),
                       ),
                     );
@@ -228,3 +248,5 @@ class _TabPerfilState extends State<TabPerfil> {
   );
 }
 }
+
+

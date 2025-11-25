@@ -3,7 +3,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class TabAgregarProyecto extends StatefulWidget {
-  const TabAgregarProyecto({super.key});
+  final String? proyectoId;
+  final Map<String, dynamic>? dataInicial;
+  const TabAgregarProyecto({super.key, this.proyectoId, this.dataInicial});
 
   @override
   State<TabAgregarProyecto> createState() => _TabAgregarProyectoState();
@@ -52,6 +54,23 @@ class _TabAgregarProyectoState extends State<TabAgregarProyecto> {
     'DevOps',
   ];
 
+    @override
+  void initState() {
+    super.initState();
+    // Si traemos datos (modo editar), rellenamos los campos
+    if (widget.dataInicial != null) {
+      _nombreController.text = widget.dataInicial!['nombre'] ?? '';
+      _descripcionController.text = widget.dataInicial!['descripcion'] ?? '';
+      
+      // Rellenar las listas (Carreras y Habilidades)
+      if (widget.dataInicial!['carreras_relacionadas'] != null) {
+        _selectedCarreras.addAll(List<String>.from(widget.dataInicial!['carreras_relacionadas']));
+      }
+      if (widget.dataInicial!['habilidades'] != null) {
+        _selectedHabilidades.addAll(List<String>.from(widget.dataInicial!['habilidades']));
+      }
+    }
+  }
   Future<void> _agregarProyecto() async {
     final isValid = _formKey.currentState!.validate();
 
@@ -66,26 +85,41 @@ class _TabAgregarProyectoState extends State<TabAgregarProyecto> {
 
     try {
       final user = FirebaseAuth.instance.currentUser;
-      await FirebaseFirestore.instance.collection('projects').add({
+      final datos = {
         'nombre': _nombreController.text.trim(),
         'descripcion': _descripcionController.text.trim(),
         'responsable': user?.email ?? 'desconocido',
         'carreras_relacionadas': _selectedCarreras.toList(),
         'habilidades': _selectedHabilidades.toList(),
-        'fecha_creacion': Timestamp.now(),
-      });
+        // Solo ponemos fecha si es nuevo
+        if (widget.proyectoId == null) 'fecha_creacion': Timestamp.now(),
+      };
 
-      _nombreController.clear();
-      _descripcionController.clear();
-      _responsableController.clear();
-      _selectedCarreras.clear();
-      _selectedHabilidades.clear();
+      if (widget.proyectoId == null) {
+        // MODO CREAR
+        await FirebaseFirestore.instance.collection('projects').add(datos);
+        
+        // Limpiamos solo si estamos creando
+        _nombreController.clear(); 
+        _descripcionController.clear();
+        _selectedCarreras.clear();
+        _selectedHabilidades.clear();
 
-      if (!mounted) return;  
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Proyecto agregado correctamente')),
-      );
-    } catch (e) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Proyecto agregado')));
+      } else {
+        // MODO EDITAR
+        await FirebaseFirestore.instance
+            .collection('projects')
+            .doc(widget.proyectoId)
+            .update(datos);
+            
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Proyecto actualizado')));
+        Navigator.pop(context);
+      }
+    }
+     catch (e) {
       if (!mounted) return;  
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error al agregar: $e')),
