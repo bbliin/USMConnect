@@ -36,10 +36,27 @@ class _TabsPageState extends State<TabsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('USM Connect'), 
-        centerTitle: true,
-        foregroundColor: Colors.white,
         backgroundColor: const Color(0xFF005A9C),
+        foregroundColor: Colors.white,
+        centerTitle: true,
+
+        title: Row(
+          mainAxisSize: MainAxisSize.min, // evita que el Row ocupe todo el espacio
+          children: [
+            Image.asset(
+              'assets/icon/usmconnectlogo.png',   // tu icono
+              width: 28,
+              height: 28,
+            ),
+            const SizedBox(width: 8),
+            const Text(
+              'USM Connect',
+              style: TextStyle(
+                color: Colors.white,
+              ),
+            ),
+          ],
+        ),
       ),
 
       body: _paginas[currentPageIndex]['pagina'],
