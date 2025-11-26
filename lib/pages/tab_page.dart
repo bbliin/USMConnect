@@ -41,10 +41,10 @@ class _TabsPageState extends State<TabsPage> {
         centerTitle: true,
 
         title: Row(
-          mainAxisSize: MainAxisSize.min, // evita que el Row ocupe todo el espacio
+          mainAxisSize: MainAxisSize.min, 
           children: [
             Image.asset(
-              'assets/icon/usmconnectlogo.png',   // tu icono
+              'assets/icon/usmconnectlogo.png',
               width: 28,
               height: 28,
             ),
